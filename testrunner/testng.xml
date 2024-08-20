@@ -2,11 +2,18 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
 
-<suite name="HomepageSmokeTest">
-  
-  <test thread-count="5" name="Homepage">
-    <classes>	    
-      <class name="testcase.HomepageTest"/>
+<suite name="MainTest">
+  <test name="Homepage">
+    <groups>
+      <run>
+        <include name="headerTest" />
+      </run>
+    </groups>
+    <classes>
+      <class name="testcase.GroupTest"/>
+      <class name="testcase.AboutPage"/>
     </classes>
   </test> <!-- Test -->
+
+
 </suite> <!-- Suite -->
