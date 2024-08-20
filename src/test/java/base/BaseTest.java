@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterMethod;
@@ -48,9 +49,10 @@ public class BaseTest {
 			driver.get(prop.getProperty("test_url"));
 			
 			driver.manage().window().maximize();
-			Thread.sleep(3000);
+			Thread.sleep(1000);
 			String title = driver.getTitle();
 			//System.out.println(title);
+
 
 		} else if (prop.getProperty("browser").equalsIgnoreCase("firefox")) {
 			// import geckodriver bellow
@@ -71,6 +73,8 @@ public class BaseTest {
 		//select city modal
 		WebElement confirmButton = driver.findElement(By.xpath("//*[@id=\"modal1\"]/div/div[2]/button[1]"));
 		confirmButton.click();
+
+
 
 	}
 

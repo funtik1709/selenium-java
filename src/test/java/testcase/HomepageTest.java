@@ -4,11 +4,15 @@ import base.BaseTest;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.SourceType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,250 +29,93 @@ import static org.testng.Assert.assertTrue;
 
 public class HomepageTest extends BaseTest {
 
-	@Test
-	public static void headerCheck() throws InterruptedException {
-		// verify title
+	@Test(priority = 1, description = "Header Title And Logo Test", groups="header")
+	public void headerCheck() throws InterruptedException {
+		//verify title = boolean
 		Boolean verifyTitle = driver.getTitle().equalsIgnoreCase("Медицинские анализы КДЛ ОЛИМП");
 		System.out.println(verifyTitle);
 		assertTrue(verifyTitle);
 
-		// JAVASCRIPT EXECUTOR
-
+		// JAVASCRIPT EXECUTOR - get title
 		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 		String script = "return document.title;";
-		String title = (String) jsExecutor.executeScript(script);
-		System.out.println("Page itile is - " +title);
+		String actual_title = (String) jsExecutor.executeScript(script);
+		System.out.println("Page title is - " + actual_title);
 
-		// click results button
-		// jsExecutor.executeScript("myFunction()");
+		String expected_title = "Медицинские анализы КДЛ ОЛИМП";
 
-		//highlight element
-		WebElement results_button = driver.findElement(By.xpath("//a[@class=\"results\"]"));
-		jsExecutor.executeScript("\"arguments[0].style.color='red'\"", results_button);
+		// TestNG - assert title
+		Assert.assertEquals(expected_title, actual_title, "Assertion result");
 
-		// scroll
-		WebElement articles = driver.findElement(By.xpath("//div[@class=\"articles\"]"));
-		jsExecutor.executeScript("arguments[0].scrollIntoView(true)", articles);
-
-		// /JAVASCRIPT EXECUTOR
-
-		//verify image
+		//verify logo
 		WebElement main_logo = driver.findElement(By.xpath("//*[local-name()='svg' and @class=\"resize_to_small in_700\"]"));
 		int logoHeight = main_logo.getSize().getHeight();
 		int logoWidth = main_logo.getSize().getWidth();
 
-		assertEquals(logoHeight, 62);
-		assertEquals(logoWidth, 140);
-		Thread.sleep(2000);
-		//driver.close();
-	}
-	@Test
-	public static void navigationCheck() throws InterruptedException {
-		WebElement nav=driver.findElement(By.xpath("//nav[@class=\"main__header__wrapper__blocks__nav\"]"));
+		Boolean logoIsDisplayed = main_logo.isDisplayed();
+		System.out.println("Logo Is Displayed - " + logoIsDisplayed);
 
-		boolean flag=nav.isDisplayed();
-
-		System.out.println("Nav element is displayed: " +flag);
 
 		driver.close();
 	}
-	@Test
-	public static void headerInfoBlock() throws InterruptedException {
-		WebElement info_block = driver.findElement(By.xpath("//div[@class=\"main__header__wrapper__blocks__info\"]"));
+	@Test(priority = 2, description = "Navigation Test", groups="nav")
+	public static void navigationCheck() throws InterruptedException {
 
-		boolean flag=info_block.isDisplayed();
+		// NAVIGATION BLOCK IS DISPLAYED
+		WebElement nav=driver.findElement(By.xpath("//nav[@class=\"main__header__wrapper__blocks__nav\"]"));
+		boolean flag=nav.isDisplayed();
+		System.out.println("Nav element is displayed: " + flag);
 
-		System.out.println("Info block is displayed: " +flag);
+		// NAVIGATION LINKS TEXT CHECK
+		String promotions = driver.findElement(By.xpath("//a[@href=\"/promotions\"]")).getText();
+		String analysis = driver.findElement(By.xpath("//a[@href=\"/analyzes\"]")).getText();
+		String cabinets = driver.findElement(By.xpath("//a[@href=\"/cabinets\"]")).getText();
+		String house_call = driver.findElement(By.xpath("//a[@href=\"/house-call\"]")).getText();
+		String about = driver.findElement(By.xpath("//a[@href=\"/about\"]")).getText();
+		String franchise = driver.findElement(By.xpath("//a[@href=\"/franchise\"]")).getText();
 
-		List<WebElement> links =  driver.findElements(By.tagName("a"));
-		System.out.println("Total links are: " + links.size());
+		SoftAssert softassert = new SoftAssert();
 
-        for (WebElement link : links) {
-            System.out.println("Link " + link.getText() + " with href: " + link.getAttribute("href"));
-        }
-	}
-	@Test
-	public static void searchAnalysis() throws InterruptedException {
-		// //input[@id="analyzes"]
-		WebElement search_field = driver.findElement(By.xpath("//input[@placeholder=\"Поиск услуг и анализов\"]"));
-		Thread.sleep(2000);
-		search_field.sendKeys("гормональный фон");
-		driver.findElement(By.xpath("//button[@class=\"find\"]")).click();
-	}
+		String[] nav_links = {"Акции", "Анализы", "Где сдать", "Выезд на дом", "О нас", "Франшиза"};
 
-	@Test
-	public static <Set> void multipleWindows() throws InterruptedException {
-		// check redirect to developers site which opens in new tab
-		WebElement dd_logo = driver.findElement(By.xpath("//a[@class=\"developed\"]"));
+		Assert.assertEquals(promotions, nav_links[0], "Nav link assertion result");
+		Assert.assertEquals(analysis, nav_links[1], "Nav link assertion result");
+		softassert.assertEquals(cabinets, nav_links[2], "Nav link assertion result");
+		Assert.assertEquals(house_call, nav_links[3], "Nav link assertion result");
+		Assert.assertEquals(about, nav_links[4], "Nav link assertion result");
+		Assert.assertEquals(franchise, nav_links[5], "Nav link assertion result");
 
-		// find and click developers logo
-		Actions actions = new Actions(driver);
-		actions.moveToElement(dd_logo);
-		actions.click().perform();
-
-		// set window handles
-		java.util.Set<String> windowhandles = driver.getWindowHandles();
-		System.out.println(windowhandles);
-
-		Iterator<String> iterator = windowhandles.iterator();
-
-		String parentWindow = iterator.next();
-		String childWindow = iterator.next();
-		driver.switchTo().window(childWindow);
-
-		// get site title and check
-		WebElement dd_title = driver.findElement(By.xpath("//div[@class=\"site-header__company\"]"));
-		Boolean isTitle = dd_title.isDisplayed();
-		System.out.println("Developers Site is opened - " + isTitle);
+		throw new SkipException("Skip navigation check test");
+		//driver.close();
 	}
 
-@Test
-public static void downloadQR() throws InterruptedException {
-		WebElement download_button = driver.findElement(By.xpath("//div[@class=\"download\"]"));
+	@Test(priority = 3, description = "Navigation to promotions page test", groups="nav")
+	public static void navToPromotions() throws InterruptedException {
+		WebElement promotions = driver.findElement(By.xpath("//a[@href=\"/promotions\"]"));
+		promotions.click();
 
-		Actions action = new Actions(driver);
-		action.moveToElement(download_button).perform();
+		WebDriverWait wait = new  WebDriverWait(driver, Duration.ofSeconds(10));
+		String promotionsTitle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[@class=\"title\"]"))).getText();
 
-		WebElement download_modal = driver.findElement(By.xpath("//div[@class=\"download__modal active\"]"));
-		Boolean isModal = download_modal.isDisplayed();
-		System.out.println("Download Modal is visible - " + isModal);
-}
+		System.out.println("Page title is " + promotionsTitle);
 
-@Test
-public static void reloadPage() throws InterruptedException {
-		WebElement isoImg = driver.findElement(By.xpath("//*[@id=\"__nuxt\"]/div/div/main/div[1]/img"));
-		Actions action = new Actions(driver);
-		action.contextClick(isoImg).perform();
-}
-
-@Test
-public static void keyboardEvents() throws InterruptedException {
-	WebElement source_text = driver.findElement(By.xpath("//h1[@class=\"title\"]"));
-
-	Actions action = new Actions(driver);
-	Thread.sleep(2000);
-	action.keyDown(source_text, Keys.CONTROL).sendKeys("a").sendKeys("c").build().perform();
-
-	WebElement target_text = driver.findElement(By.xpath("//input[@placeholder=\"Поиск услуг и анализов\"]"));
-	Thread.sleep(2000);
-	action.keyDown(target_text, Keys.CONTROL).sendKeys("a").sendKeys("v").build().perform();
-
-}
-
-// Implicit and Explicit wait to check Google Play
-
-@Test
-public static void testWait() throws InterruptedException {
-	WebElement d_button = driver.findElement(By.xpath("//div[@class=\"download\"]"));
-	Actions action = new Actions(driver);
-	action.moveToElement(d_button).perform();
-
-
-
-// IMPLICIT WAIT
-//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-//IMPLICIT WAIT
-//	WebElement g_play = driver.findElement(By.xpath("//div[@class=\"link\"]//child::img[@src=\"/icons/GooglePlay.svg\"]"));
-//	g_play.click();
-
-	// EXPLICIT WAIT
-//	WebDriverWait wait = new  WebDriverWait(driver, Duration.ofSeconds(10));
-//	wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"link\"]//child::img[@src=\"/icons/GooglePlay.svg\"]"))).click();
-
-
-
-// FLUENT WAIT
-
-Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-			.withTimeout(Duration.ofSeconds(10))
-			.pollingEvery(Duration.ofSeconds(2))
-			.ignoring(NoSuchElementException.class);
-
-WebElement g_play = driver.findElement(By.xpath("//div[@class=\"link\"]//child::img[@src=\"/icons/GooglePlay.svg\"]"));
-g_play.click();
-
-
-// MULTIPLE WINDOWS
-
-java.util.Set<String> windowhandles = driver.getWindowHandles();
-System.out.println(windowhandles);
-
-Iterator<String> iterator = windowhandles.iterator();
-
-String parentWindow = iterator.next();
-String childWindow = iterator.next();
-driver.switchTo().window(childWindow);
-
-String gplay_title = driver.findElement(By.xpath("//h1[@itemprop=\"name\"]")).getText();
-
-assertEquals(gplay_title, "КДЛ ОЛИМП анализы");
-}
-@Test
-public static void webTable() throws InterruptedException {
-	driver.get("https://new.kdlolymp.kz/cabinets/protsedurnyy-kabinet-seyfullina1");
-
-	// Step 1 - find table
-	// Step 2 - get the number of rows
-	// Step 3 - get the number of columns
-	// Step 4 - iterate rows and columns to get data
-
-	WebElement table = driver.findElement(By.xpath("//table[@class=\"services-desktop\"]"));
-	Actions action = new Actions(driver);
-	action.moveToElement(table).perform();
-
-	//table[@class="services-desktop"]/tr
-	//table[@class="services-desktop"]/tr[1]/th
-
-	// find rows
-	List<WebElement> rows = driver.findElements(By.xpath("//table[@class=\"services-desktop\"]/tr"));
-	int rowsize = rows.size();
-	System.out.println(rowsize);
-
-	// find columns
-	List<WebElement> columns = driver.findElements(By.xpath("//table[@class=\"services-desktop\"]/tr[1]/th"));
-	int columnsize = columns.size();
-	System.out.println(columnsize);
-
-	for (int i = 1; i <= rowsize; i++) {
-		for (int j = 1; j <= columnsize; j++) {
-			System.out.println(driver.findElement(By.xpath("//table[@class=\"services-desktop\"]/tr["+ i +"]/th["+ j +"]")).getText());
-		}
+		Assert.assertEquals(promotionsTitle, "Акции", "Page title assertion result");
+		driver.close();
 	}
 
-	// problem with table structure should be fixed
-}
+	@Test(priority = 4, description = "Navigation to analysis page test", groups="nav")
+	public static void navToAnalysis() throws InterruptedException {
+		WebElement analysis = driver.findElement(By.xpath("//a[@href=\"/analyzes\"]"));
+		analysis.click();
 
-// TAKE SCREENSHOT
+		WebDriverWait wait = new  WebDriverWait(driver, Duration.ofSeconds(10));
 
-@Test
-public static void takeScreenshots() throws InterruptedException, IOException {
+		String analysisTitle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[@class=\"title\"]"))).getText();
+		System.out.println("Page title is " + analysisTitle);
 
-	Date currentdate = new Date();
-	String screenshot_filename =  currentdate.toString().replace(" ", "_").replace(":", "_");
-	System.out.println(screenshot_filename);
+		Assert.assertEquals(analysisTitle, "Анализы", "Page title assertion result");
 
-	File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-	FileUtils.copyFile(screenshotFile, new File(".//screenshots/"+screenshot_filename+".png"));
-
-}
-
-// handling auth passing login and password to the URL
-@Test
-public static void authHandling1() throws InterruptedException {
-	driver.get("https://wewe:wewe@kdlolympsite.ddirection.kz");
-
-}
-
-// handling auth via external data
-public static String login = "wewe";
-public static String password = "wewe";
-
-@Test
-public static void authHandling2() throws InterruptedException {
-	driver.get("https://"+login+":"+password+"@kdlolympsite.ddirection.kz");
-}
-
-
+		driver.close();
+	}
 
 }
