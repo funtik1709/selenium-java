@@ -3,15 +3,18 @@
 
 
 <suite name="MainTest">
+  <listeners>
+    <listener class-name="common.Listeners" />
+  </listeners>
   <test name="Homepage">
     <groups>
       <run>
-        <include name="headerTest" />
+        <include name="testResult" />
       </run>
     </groups>
     <classes>
-      <class name="testcase.GroupTest"/>
-      <class name="testcase.AboutPage"/>
+      <class name="base.BaseTest"/>
+      <class name="testcase.CheckResults"/>
     </classes>
   </test> <!-- Test -->
 
