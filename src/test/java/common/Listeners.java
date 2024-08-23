@@ -3,8 +3,11 @@ package common;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import utilities.testUtils;
 
-public class Listeners implements ITestListener {
+import java.io.IOException;
+
+public class Listeners extends testUtils implements ITestListener {
     public void onTestStart(ITestResult result) {
         System.out.println("Listener Info. OnTestStart");
     }
@@ -15,6 +18,11 @@ public class Listeners implements ITestListener {
 
     public void onTestFailure(ITestResult result) {
         System.out.println("Listener Info. OnTestFailure");
+        try {
+            getScreenshot();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void onTestSkipped(ITestResult result) {
