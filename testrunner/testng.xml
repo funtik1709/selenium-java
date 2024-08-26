@@ -6,7 +6,7 @@
   <listeners>
     <listener class-name="common.Listeners" />
   </listeners>
-  <test name="Homepage">
+  <test name="CheckResults">
     <groups>
       <run>
         <include name="testResult" />
@@ -16,7 +16,7 @@
       <class name="base.BaseTest"/>
       <class name="testcase.CheckResults"/>
     </classes>
-  </test> <!-- Test -->
+</test> <!-- Test -->
 
 
 </suite> <!-- Suite -->

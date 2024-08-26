@@ -3,17 +3,20 @@ package common;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import utilities.testUtils;
 
 import java.io.IOException;
 
 public class Listeners extends testUtils implements ITestListener {
     public void onTestStart(ITestResult result) {
-        System.out.println("Listener Info. OnTestStart");
+        Reporter.log("Method name is "+result.getName());
+        System.out.println("Listener Info. OnTestStart - "+result.getName());
     }
 
     public void onTestSuccess(ITestResult result) {
-
+        Reporter.log("Status of run is "+result.getStatus());
+        System.out.println("Status of run is - "+result.getStatus());
     }
 
     public void onTestFailure(ITestResult result) {

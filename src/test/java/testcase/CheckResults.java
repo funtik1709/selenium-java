@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -43,12 +44,13 @@ public class CheckResults extends BaseTest {
             System.out.println(username+"----"+password);
         }
 
-//        driver.close();
+        //driver.close();
     }
 
     @Test(dataProvider="dataSet1", dataProviderClass= DataProviderFile.class, groups = "testResult")
     public void test2(String username, String password, int code){
         System.out.println("Login is: "+username+" Password is: "+password+" Code is: "+code);
-//        driver.close();
+        Reporter.log("Test2");
+        //driver.close();
     }
 }
